@@ -43,6 +43,7 @@ class FoursquareApiClient(
         ll: FsqLatLon,
         radius: Int,
         fields: Set<String>? = null,
+        language: String? = null,
     ): FsqPlaceSearch {
         Log.d("MM20", "placesSearch: $query, $ll, $radius, $fields")
         return client.get {
@@ -54,6 +55,9 @@ class FoursquareApiClient(
                 if (fields != null) {
                     parameter("fields", fields.joinToString(","))
                 }
+            }
+            if (language != null) {
+                header("Accept-Language", language)
             }
         }.also {
             Log.d("MM20", it.request.url.toString())

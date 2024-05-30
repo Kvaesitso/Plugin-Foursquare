@@ -33,6 +33,9 @@ private val Fields =
         "rating"
     )
 
+// https://docs.foursquare.com/developer/reference/localization-v3
+private val Languages = setOf("en", "es", "fr", "de", "it", "ja", "th", "tr", "ko", "ru", "pt", "id")
+
 class FoursquareLocationProvider : LocationPluginProvider(
     config = SearchPluginConfig(
         storageStrategy = StorageStrategy.Deferred,
@@ -53,7 +56,7 @@ class FoursquareLocationProvider : LocationPluginProvider(
 
     }
 
-    override suspend fun search(query: LocationQuery, allowNetwork: Boolean): List<Location> {
+    override suspend fun search(query: LocationQuery, allowNetwork: Boolean, lang: String?): List<Location> {
         if (!allowNetwork) return emptyList()
 
         val results = apiClient.placesSearch(
@@ -64,6 +67,7 @@ class FoursquareLocationProvider : LocationPluginProvider(
             ),
             radius = query.searchRadius.toInt(),
             fields = Fields,
+            language = if (lang in Languages) lang else "en"
         )
 
         return results.results?.mapNotNull { it.toLocation() } ?: emptyList()
@@ -149,7 +153,8 @@ private fun FsqPlaceCategory.toIcon(): LocationIcon? {
         in 10024..10026 -> LocationIcon.MovieTheater
         10051, in 10060..10067 -> LocationIcon.Stadium
         10035, 10036, 10038, 10043 -> LocationIcon.Theater
-        10037, in 10039..10043 -> LocationIcon.Music
+        10037, in 10039..10043 -> LocationIcon.ConcertHall
+        10009 -> LocationIcon.Circus
         in 12009..12012, in 12049..12063 -> LocationIcon.School
         12013, 12125 -> LocationIcon.University
         12067 -> LocationIcon.Courthouse
@@ -184,16 +189,19 @@ private fun FsqPlaceCategory.toIcon(): LocationIcon? {
         in 17000..17146 -> LocationIcon.Shopping
         17018, 17019, 17022 -> LocationIcon.BookStore
         17042, 17043 -> LocationIcon.ClothingStore
+        11064 -> LocationIcon.HairSalon
         17045 -> LocationIcon.JewelryStore
         17076 -> LocationIcon.LiquorStore
         17110 -> LocationIcon.PetStore
-        15024 -> LocationIcon.Optometrist
+        15024 -> LocationIcon.Optician
         13002 -> LocationIcon.Bakery
         17145 -> LocationIcon.Pharmacy
+        11068, 11069 -> LocationIcon.Laundromat
         17029 -> LocationIcon.ConvenienceStore
         17114 -> LocationIcon.ShoppingMall
         12072 -> LocationIcon.Police
         12071 -> LocationIcon.FireDepartment
+        11044 -> LocationIcon.Atm
         in 11042..11055 -> LocationIcon.Bank
         in 19009..19019 -> LocationIcon.Hotel
         11011 -> LocationIcon.CarWash
@@ -210,6 +218,17 @@ private fun FsqPlaceCategory.toIcon(): LocationIcon? {
         in 19031..19041 -> LocationIcon.Airport
         19006 -> LocationIcon.ChargingStation
         19007 -> LocationIcon.GasStation
+        19049, 19068 -> LocationIcon.Taxi
+        18062, 18063, 18064 -> LocationIcon.Soccer
+        18013, 18014, 18015 -> LocationIcon.AmericanFootball
+        18045, 18046, 18047 -> LocationIcon.Tennis
+        18002, 18003, 18004 -> LocationIcon.Baseball
+        18049, 18050 -> LocationIcon.Rugby
+        18006, 18007, 18008 -> LocationIcon.Basketball
+        in 18073..18076 -> LocationIcon.Swimming
+        in 18000..18086 -> LocationIcon.Sports
+        16026 -> LocationIcon.Monument
+        in 12064..12075, 12124 -> LocationIcon.GovernmentBuilding
         else -> null
     }
 }
