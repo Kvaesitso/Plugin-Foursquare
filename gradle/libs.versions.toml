@@ -17,7 +17,7 @@ composeMaterial3 = "1.2.1"
 koin = "3.5.0"
 ktor = "2.3.10"
 
-launcherSdk = "1.2.0-SNAPSHOT"
+launcherSdk = "2.0.0-SNAPSHOT"
 
 
 [libraries]

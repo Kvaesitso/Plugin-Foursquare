@@ -1,13 +1,15 @@
 package de.mm20.launcher2.plugin.foursquare
 
-import de.mm20.launcher2.plugin.config.SearchPluginConfig
+import de.mm20.launcher2.plugin.config.QueryPluginConfig
 import de.mm20.launcher2.plugin.config.StorageStrategy
 import de.mm20.launcher2.plugin.foursquare.api.FsqLatLon
 import de.mm20.launcher2.plugin.foursquare.api.FsqPlace
 import de.mm20.launcher2.plugin.foursquare.api.FsqPlaceCategory
 import de.mm20.launcher2.plugin.foursquare.api.FsqPlaceHoursRegular
+import de.mm20.launcher2.sdk.base.GetParams
+import de.mm20.launcher2.sdk.base.SearchParams
 import de.mm20.launcher2.sdk.locations.Location
-import de.mm20.launcher2.sdk.locations.LocationPluginProvider
+import de.mm20.launcher2.sdk.locations.LocationProvider
 import de.mm20.launcher2.sdk.locations.LocationQuery
 import de.mm20.launcher2.search.location.Address
 import de.mm20.launcher2.search.location.Attribution
@@ -34,10 +36,11 @@ private val Fields =
     )
 
 // https://docs.foursquare.com/developer/reference/localization-v3
-private val Languages = setOf("en", "es", "fr", "de", "it", "ja", "th", "tr", "ko", "ru", "pt", "id")
+private val Languages =
+    setOf("en", "es", "fr", "de", "it", "ja", "th", "tr", "ko", "ru", "pt", "id")
 
-class FoursquareLocationProvider : LocationPluginProvider(
-    config = SearchPluginConfig(
+class FoursquareLocationProvider : LocationProvider(
+    config = QueryPluginConfig(
         storageStrategy = StorageStrategy.Deferred,
     )
 ) {
@@ -48,7 +51,7 @@ class FoursquareLocationProvider : LocationPluginProvider(
         return true
     }
 
-    override suspend fun get(id: String): Location? {
+    override suspend fun get(id: String, params: GetParams): Location? {
         return apiClient.placeById(
             id,
             fields = Fields
@@ -56,8 +59,8 @@ class FoursquareLocationProvider : LocationPluginProvider(
 
     }
 
-    override suspend fun search(query: LocationQuery, allowNetwork: Boolean, lang: String?): List<Location> {
-        if (!allowNetwork) return emptyList()
+    override suspend fun search(query: LocationQuery, params: SearchParams): List<Location> {
+        if (!params.allowNetwork) return emptyList()
 
         val results = apiClient.placesSearch(
             query.query,
@@ -67,7 +70,7 @@ class FoursquareLocationProvider : LocationPluginProvider(
             ),
             radius = query.searchRadius.toInt(),
             fields = Fields,
-            language = if (lang in Languages) lang else "en"
+            language = if (params.lang in Languages) params.lang else "en"
         )
 
         return results.results?.mapNotNull { it.toLocation() } ?: emptyList()
