@@ -104,7 +104,7 @@ private fun FsqPlace.toLocation(): Location? {
             OpeningSchedule.Hours(
                 openingHours = it.mapNotNull { it.toOpeningHours() },
             )
-        }
+        },
     )
 }
 

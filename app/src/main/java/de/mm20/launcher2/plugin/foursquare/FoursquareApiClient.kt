@@ -45,7 +45,6 @@ class FoursquareApiClient(
         fields: Set<String>? = null,
         language: String? = null,
     ): FsqPlaceSearch {
-        Log.d("MM20", "placesSearch: $query, $ll, $radius, $fields")
         return client.get {
             url {
                 path("v3", "places", "search")
@@ -59,11 +58,7 @@ class FoursquareApiClient(
             if (language != null) {
                 header("Accept-Language", language)
             }
-        }.also {
-            Log.d("MM20", it.request.url.toString())
-        }.body<FsqPlaceSearch>().also {
-            Log.d("MM20", it.toString())
-        }
+        }.body<FsqPlaceSearch>()
     }
 
     suspend fun placeById(
