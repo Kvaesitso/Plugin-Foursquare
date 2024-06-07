@@ -7,6 +7,7 @@ import de.mm20.launcher2.plugin.foursquare.api.FsqPlace
 import de.mm20.launcher2.plugin.foursquare.api.FsqPlaceCategory
 import de.mm20.launcher2.plugin.foursquare.api.FsqPlaceHoursRegular
 import de.mm20.launcher2.sdk.base.GetParams
+import de.mm20.launcher2.sdk.base.RefreshParams
 import de.mm20.launcher2.sdk.base.SearchParams
 import de.mm20.launcher2.sdk.locations.Location
 import de.mm20.launcher2.sdk.locations.LocationProvider
@@ -41,7 +42,7 @@ private val Languages =
 
 class FoursquareLocationProvider : LocationProvider(
     config = QueryPluginConfig(
-        storageStrategy = StorageStrategy.Deferred,
+        storageStrategy = StorageStrategy.StoreCopy,
     )
 ) {
     private lateinit var apiClient: FoursquareApiClient
@@ -51,12 +52,11 @@ class FoursquareLocationProvider : LocationProvider(
         return true
     }
 
-    override suspend fun get(id: String, params: GetParams): Location? {
+    override suspend fun refresh(item: Location, params: RefreshParams): Location? {
         return apiClient.placeById(
-            id,
+            item.id,
             fields = Fields
         )?.toLocation()
-
     }
 
     override suspend fun search(query: LocationQuery, params: SearchParams): List<Location> {
