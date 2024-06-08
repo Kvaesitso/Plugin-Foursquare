@@ -1,12 +1,12 @@
 package de.mm20.launcher2.plugin.foursquare
 
+import android.net.Uri
 import de.mm20.launcher2.plugin.config.QueryPluginConfig
 import de.mm20.launcher2.plugin.config.StorageStrategy
 import de.mm20.launcher2.plugin.foursquare.api.FsqLatLon
 import de.mm20.launcher2.plugin.foursquare.api.FsqPlace
 import de.mm20.launcher2.plugin.foursquare.api.FsqPlaceCategory
 import de.mm20.launcher2.plugin.foursquare.api.FsqPlaceHoursRegular
-import de.mm20.launcher2.sdk.base.GetParams
 import de.mm20.launcher2.sdk.base.RefreshParams
 import de.mm20.launcher2.sdk.base.SearchParams
 import de.mm20.launcher2.sdk.locations.Location
@@ -21,6 +21,7 @@ import java.time.DateTimeException
 import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalTime
+import kotlin.time.Duration.Companion.days
 
 private val Fields =
     setOf(
@@ -53,9 +54,13 @@ class FoursquareLocationProvider : LocationProvider(
     }
 
     override suspend fun refresh(item: Location, params: RefreshParams): Location? {
+        if ((System.currentTimeMillis() - params.lastUpdated) < 1.days.inWholeMilliseconds) {
+            return item
+        }
         return apiClient.placeById(
             item.id,
-            fields = Fields
+            fields = Fields,
+            language = params.lang,
         )?.toLocation()
     }
 
@@ -94,9 +99,9 @@ private fun FsqPlace.toLocation(): Location? {
         websiteUrl = website,
         userRating = rating?.div(10f),
         attribution = Attribution(
-            text = "Foursquare",
+            text = "Foresquare",
             url = "https://foursquare.com/v/$fsqId",
-            iconUrl = null,
+            iconUrl = Uri.parse("android.resource://de.mm20.launcher2.plugin.foursquare/drawable/ic_foursquare"),
         ),
         icon = categories?.firstOrNull()?.toIcon(),
         category = categories?.firstOrNull()?.name,

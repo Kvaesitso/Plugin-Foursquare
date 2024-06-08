@@ -64,6 +64,7 @@ class FoursquareApiClient(
     suspend fun placeById(
         fsqId: String,
         fields: Set<String>? = null,
+        language: String? = null,
     ): FsqPlace? {
         return client.get {
             url {
@@ -73,6 +74,9 @@ class FoursquareApiClient(
                         append("fields", fields.joinToString(","))
                     }
                 }
+            }
+            if (language != null) {
+                header("Accept-Language", language)
             }
         }.body()
     }
