@@ -99,7 +99,7 @@ private fun FsqPlace.toLocation(): Location? {
         websiteUrl = website,
         userRating = rating?.div(10f),
         attribution = Attribution(
-            text = "Foresquare",
+            text = "Foursquare",
             url = "https://foursquare.com/v/$fsqId",
             iconUrl = Uri.parse("android.resource://de.mm20.launcher2.plugin.foursquare/drawable/ic_foursquare"),
         ),
