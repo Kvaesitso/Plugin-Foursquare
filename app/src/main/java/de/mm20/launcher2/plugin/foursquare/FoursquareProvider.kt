@@ -1,5 +1,6 @@
 package de.mm20.launcher2.plugin.foursquare
 
+import android.content.Intent
 import android.net.Uri
 import de.mm20.launcher2.plugin.config.QueryPluginConfig
 import de.mm20.launcher2.plugin.config.StorageStrategy
@@ -7,6 +8,7 @@ import de.mm20.launcher2.plugin.foursquare.api.FsqLatLon
 import de.mm20.launcher2.plugin.foursquare.api.FsqPlace
 import de.mm20.launcher2.plugin.foursquare.api.FsqPlaceCategory
 import de.mm20.launcher2.plugin.foursquare.api.FsqPlaceHoursRegular
+import de.mm20.launcher2.sdk.PluginState
 import de.mm20.launcher2.sdk.base.RefreshParams
 import de.mm20.launcher2.sdk.base.SearchParams
 import de.mm20.launcher2.sdk.locations.Location
@@ -17,6 +19,7 @@ import de.mm20.launcher2.search.location.Attribution
 import de.mm20.launcher2.search.location.LocationIcon
 import de.mm20.launcher2.search.location.OpeningHours
 import de.mm20.launcher2.search.location.OpeningSchedule
+import kotlinx.coroutines.flow.first
 import java.time.DateTimeException
 import java.time.DayOfWeek
 import java.time.Duration
@@ -49,7 +52,7 @@ class FoursquareLocationProvider : LocationProvider(
     private lateinit var apiClient: FoursquareApiClient
 
     override fun onCreate(): Boolean {
-        apiClient = FoursquareApiClient(context!!.getString(R.string.api_key))
+        apiClient = FoursquareApiClient(context!!)
         return true
     }
 
@@ -79,6 +82,15 @@ class FoursquareLocationProvider : LocationProvider(
         )
 
         return results.results?.mapNotNull { it.toLocation() } ?: emptyList()
+    }
+
+    override suspend fun getPluginState(): PluginState {
+        val context = context!!
+        apiClient.apiKey.first() ?: return PluginState.SetupRequired(
+            Intent(context, SettingsActivity::class.java),
+            context.getString(R.string.plugin_state_setup_required)
+        )
+        return PluginState.Ready()
     }
 }
 

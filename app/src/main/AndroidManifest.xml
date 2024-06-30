@@ -28,6 +28,16 @@
             android:name="de.mm20.launcher2.plugin.icon"
             android:resource="@drawable/ic_foursquare" />
 
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="de.mm20.launcher2.action.PLUGIN_SETTINGS" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <provider
             android:name="de.mm20.launcher2.plugin.foursquare.FoursquareLocationProvider"
             android:authorities="de.mm20.launcher2.plugin.foursquare.locations"
