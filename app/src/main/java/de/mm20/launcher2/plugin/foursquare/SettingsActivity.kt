@@ -37,6 +37,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -92,121 +93,132 @@ class SettingsActivity : AppCompatActivity() {
                     horizontalAlignment = Alignment.Start,
                 ) {
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.Start,
+                    CompositionLocalProvider(
+                        LocalContentColor provides MaterialTheme.colorScheme.onSurface
                     ) {
-                        Text(stringResource(R.string.setup_step_n, 1), style = MaterialTheme.typography.titleLarge)
-                        Text(
-                            stringResource(R.string.instruction_register, "Foursquare"),
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
-                        Text(
-                            "https://foursquare.com/developers",
-                            style = MaterialTheme.typography.bodyMedium,
-                            textDecoration = TextDecoration.Underline,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(top = 8.dp).clickable {
-                                startActivity(Intent(Intent.ACTION_VIEW).apply {
-                                    data = "https://foursquare.com/developers".toUri()
-                                })
-                            }
-                        )
-                    }
-
-                    HorizontalDivider()
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.Start,
-                    ) {
-                        Text(stringResource(R.string.setup_step_n, 2), style = MaterialTheme.typography.titleLarge)
-                        Text(
-                            stringResource(R.string.instruction_enter_key),
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
 
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.Start,
                         ) {
-                            OutlinedTextField(
-                                modifier = Modifier.fillMaxWidth(),
-                                enabled = apiKeyState != ApiKeyState.Saving,
-                                value = apiKey,
-                                onValueChange = {
-                                    apiKey = it
-                                    apiKeyState = null
-                                },
-                                label = {
-                                    Text(stringResource(id = R.string.input_api_key))
-                                },
-                                singleLine = true,
-                                supportingText = when (apiKeyState) {
-                                    ApiKeyState.Saved -> {
-                                        { Text(stringResource(R.string.api_key_state_saved)) }
-                                    }
-
-                                    ApiKeyState.Invalid -> {
-                                        { Text(stringResource(R.string.api_key_state_invalid)) }
-                                    }
-
-                                    ApiKeyState.Error -> {
-                                        { Text(stringResource(R.string.api_key_state_error)) }
-                                    }
-
-                                    else -> null
-                                },
-                                isError = apiKeyState == ApiKeyState.Invalid || apiKeyState == ApiKeyState.Error,
-                                trailingIcon = when (apiKeyState) {
-                                    ApiKeyState.Saved -> {
-                                        { Icon(Icons.Rounded.CheckCircle, null) }
-                                    }
-
-                                    ApiKeyState.Invalid -> {
-                                        { Icon(Icons.Rounded.Error, null) }
-                                    }
-
-                                    ApiKeyState.Error -> {
-                                        { Icon(Icons.Rounded.Error, null) }
-                                    }
-
-                                    else -> null
-                                },
+                            Text(
+                                stringResource(R.string.setup_step_n, 1),
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                            Text(
+                                stringResource(R.string.instruction_register, "Foursquare"),
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+                            Text(
+                                "https://foursquare.com/developers",
+                                style = MaterialTheme.typography.bodyMedium,
+                                textDecoration = TextDecoration.Underline,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(top = 8.dp).clickable {
+                                    startActivity(Intent(Intent.ACTION_VIEW).apply {
+                                        data = "https://foursquare.com/developers".toUri()
+                                    })
+                                }
                             )
                         }
-                        Button(
-                            enabled = apiKeyState != ApiKeyState.Saving && apiKey.isNotBlank() && apiKey != savedApiKey,
-                            contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
-                            onClick = { saveApiKey(apiKey) },
-                            modifier = Modifier.align(Alignment.End)
+
+                        HorizontalDivider()
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.Start,
                         ) {
-                            if (apiKeyState == ApiKeyState.Saving) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(ButtonDefaults.IconSize),
-                                    color = LocalContentColor.current,
-                                    strokeWidth = 2.dp,
-                                )
-                            } else {
-                                Icon(
-                                    Icons.Rounded.Save,
-                                    null,
-                                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                            Text(
+                                stringResource(R.string.setup_step_n, 2),
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                            Text(
+                                stringResource(R.string.instruction_enter_key),
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                OutlinedTextField(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    enabled = apiKeyState != ApiKeyState.Saving,
+                                    value = apiKey,
+                                    onValueChange = {
+                                        apiKey = it
+                                        apiKeyState = null
+                                    },
+                                    label = {
+                                        Text(stringResource(id = R.string.input_api_key))
+                                    },
+                                    singleLine = true,
+                                    supportingText = when (apiKeyState) {
+                                        ApiKeyState.Saved -> {
+                                            { Text(stringResource(R.string.api_key_state_saved)) }
+                                        }
+
+                                        ApiKeyState.Invalid -> {
+                                            { Text(stringResource(R.string.api_key_state_invalid)) }
+                                        }
+
+                                        ApiKeyState.Error -> {
+                                            { Text(stringResource(R.string.api_key_state_error)) }
+                                        }
+
+                                        else -> null
+                                    },
+                                    isError = apiKeyState == ApiKeyState.Invalid || apiKeyState == ApiKeyState.Error,
+                                    trailingIcon = when (apiKeyState) {
+                                        ApiKeyState.Saved -> {
+                                            { Icon(Icons.Rounded.CheckCircle, null) }
+                                        }
+
+                                        ApiKeyState.Invalid -> {
+                                            { Icon(Icons.Rounded.Error, null) }
+                                        }
+
+                                        ApiKeyState.Error -> {
+                                            { Icon(Icons.Rounded.Error, null) }
+                                        }
+
+                                        else -> null
+                                    },
                                 )
                             }
-                            Text(
-                                text = stringResource(R.string.api_key_save_button),
-                                modifier = Modifier.padding(start = ButtonDefaults.IconSpacing)
-                            )
+                            Button(
+                                enabled = apiKeyState != ApiKeyState.Saving && apiKey.isNotBlank() && apiKey != savedApiKey,
+                                contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+                                onClick = { saveApiKey(apiKey) },
+                                modifier = Modifier.align(Alignment.End)
+                            ) {
+                                if (apiKeyState == ApiKeyState.Saving) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(ButtonDefaults.IconSize),
+                                        color = LocalContentColor.current,
+                                        strokeWidth = 2.dp,
+                                    )
+                                } else {
+                                    Icon(
+                                        Icons.Rounded.Save,
+                                        null,
+                                        modifier = Modifier.size(ButtonDefaults.IconSize)
+                                    )
+                                }
+                                Text(
+                                    text = stringResource(R.string.api_key_save_button),
+                                    modifier = Modifier.padding(start = ButtonDefaults.IconSpacing)
+                                )
+                            }
                         }
                     }
                 }
