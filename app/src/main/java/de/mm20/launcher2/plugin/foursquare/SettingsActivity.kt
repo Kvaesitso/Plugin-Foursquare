@@ -138,6 +138,25 @@ class SettingsActivity : AppCompatActivity() {
                                 style = MaterialTheme.typography.titleLarge
                             )
                             Text(
+                                stringResource(R.string.instruction_create_project),
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+                        }
+
+                        HorizontalDivider()
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.Start,
+                        ) {
+                            Text(
+                                stringResource(R.string.setup_step_n, 3),
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                            Text(
                                 stringResource(R.string.instruction_enter_key),
                                 style = MaterialTheme.typography.bodyMedium,
                                 modifier = Modifier.padding(top = 8.dp)

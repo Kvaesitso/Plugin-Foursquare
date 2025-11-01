@@ -10,6 +10,7 @@ import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
@@ -38,8 +39,9 @@ class FoursquareApiClient(
         defaultRequest {
             url {
                 protocol = URLProtocol.HTTPS
-                host = "api.foursquare.com"
+                host = "places-api.foursquare.com"
             }
+            header("x-places-api-version", "2025-06-17")
         }
     }
 
@@ -53,7 +55,7 @@ class FoursquareApiClient(
     ): FsqPlaceSearch {
         val response = client.get {
             url {
-                path("v3", "places", "search")
+                path("places", "search")
                 parameter("query", query)
                 parameter("ll", "${ll.latitude},${ll.longitude}")
                 parameter("radius", radius.toString())
@@ -64,7 +66,7 @@ class FoursquareApiClient(
             if (language != null) {
                 header("Accept-Language", language)
             }
-            header("Authorization", apiKey ?: this@FoursquareApiClient.apiKey.first())
+            bearerAuth(apiKey ?: this@FoursquareApiClient.apiKey.first() ?: "")
         }
         if (response.status == HttpStatusCode.Unauthorized) {
             throw IllegalArgumentException("Unauthorized. Invalid API key?; body ${response.bodyAsText()}")
@@ -75,14 +77,14 @@ class FoursquareApiClient(
     }
 
     suspend fun placeById(
-        fsqId: String,
+        fsqPlaceId: String,
         fields: Set<String>? = null,
         language: String? = null,
         apiKey: String? = null,
     ): FsqPlace? {
         val response = client.get {
             url {
-                path("v3", "places", fsqId)
+                path("places", fsqPlaceId)
                 if (fields != null) {
                     parameters {
                         append("fields", fields.joinToString(","))
@@ -92,7 +94,7 @@ class FoursquareApiClient(
             if (language != null) {
                 header("Accept-Language", language)
             }
-            header("Authorization", apiKey ?: this@FoursquareApiClient.apiKey.first())
+            bearerAuth(apiKey ?: this@FoursquareApiClient.apiKey.first() ?: "")
         }
         if (response.status == HttpStatusCode.Unauthorized) {
             throw IllegalArgumentException("Unauthorized. Invalid API key?; body ${response.bodyAsText()}")
@@ -111,14 +113,14 @@ class FoursquareApiClient(
     }
 
     suspend fun testApiKey(apiKey: String): Boolean {
-        return try {
+        try {
             placeById(
-                fsqId = "51a2445e5019c80b56934c75",
+                fsqPlaceId = "51a2445e5019c80b56934c75",
                 apiKey = apiKey
             )
             return true
         } catch (e: IllegalArgumentException) {
-            Log.e("OwmApiClient", "Invalid API key", e)
+            Log.e("FoursquareApiClient", "Invalid API key", e)
             return false
         }
     }

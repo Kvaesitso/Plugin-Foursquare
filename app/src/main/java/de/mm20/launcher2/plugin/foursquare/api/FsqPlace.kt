@@ -5,12 +5,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FsqPlace(
-    @SerialName("fsq_id")
-    val fsqId: String? = null,
-    val name: String? = null,
-    val geocodes: FsqPlaceGeocodes? = null,
-    val location: FsqPlaceLocation? = null,
+    @SerialName("fsq_place_id")
+    val fsqPlaceId: String? = null,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
     val categories: List<FsqPlaceCategory>? = null,
+    val name: String? = null,
+    val location: FsqPlaceLocation? = null,
     val tel: String? = null,
     val email: String? = null,
     val website: String? = null,
@@ -35,8 +36,6 @@ data class FsqPlaceGeocodes(
 data class FsqPlaceLocation(
     val address: String? = null,
     val country: String? = null,
-    @SerialName("cross_street")
-    val crossStreet: String? = null,
     @SerialName("formatted_address")
     val formattedAddress: String? = null,
     val locality: String? = null,
@@ -46,7 +45,8 @@ data class FsqPlaceLocation(
 
 @Serializable
 data class FsqPlaceCategory(
-    val id: Int? = null,
+    @SerialName("fsq_category_id")
+    val fsqCategoryId: String? = null,
     val name: String? = null,
     @SerialName("short_name")
     val shortName: String? = null,
